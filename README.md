@@ -14,3 +14,6 @@ To show our appreciation, the profile picture of each donor along with their Git
 To make a donation, please send your GitHub username along with the donation amount to the following link: [Buy Me a Coffee](https://www.buymeacoffee.com/ooovenenoso).
 
 Thank you for fueling our efforts and being a part of this journey!
+
+## Demo Script
+The file `PentestGPT.txt` serves as the main demonstration payload.
