@@ -18,8 +18,5 @@ Thank you for fueling our efforts and being a part of this journey!
 ## Demo Script
 The file `PentestGPT.txt` serves as the main demonstration payload.
 
-## Experimental Terminal Chatbot
 
-Unconfirmed scripts in the `unconfirmed_experiments` folder include DuckyScript payloads for simple terminal-based chat clients that use OpenAI's GPT models. They can serve as portable ChatGPT-like tools from the command line.
-Unconfirmed scripts in the `unconfirmed_experiments` folder include simple terminal-based chat clients using OpenAI's GPT models. They can serve as portable ChatGPT-like tools from the command line.
 
