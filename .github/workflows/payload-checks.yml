@@ -1,0 +1,32 @@
+name: payload-checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate DuckyScript payloads
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Regenerate payloads
+        run: python scripts/generate_payloads.py
+
+      - name: Ensure generated payloads are committed
+        run: git diff --exit-code
+
+      - name: Validate payloads
+        run: python scripts/validate_payloads.py
