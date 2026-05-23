@@ -21,6 +21,7 @@ BadUSB-GPT contains USB Rubber Ducky payload experiments that generate an AI-ass
 - `unconfirmed_experiments/PentestGPT_4oMini.txt` — experimental `gpt-4o-mini` variant.
 - `unconfirmed_experiments/PentestGPT_4o.txt` — experimental `gpt-4o` variant.
 - `unconfirmed_experiments/PentestGPT_4Turbo.txt` — experimental `gpt-4-turbo` variant.
+- `unconfirmed_experiments/Install_Windows_MCP_Discord_Webhook.txt` — experimental authorized installer for [Windows-MCP](https://github.com/CursorTouch/Windows-MCP) that posts installation status to a Discord webhook supplied through an environment variable.
 
 ## Requirements
 
@@ -35,6 +36,15 @@ setx BADUSB_GPT_BASE_URL "https://your-openai-compatible-provider/v1"
 ```
 
 The payload also accepts compatible `OPENAI_API_KEY` and `OPENAI_BASE_URL` variables if you already use those.
+
+For the experimental Windows-MCP installer payload, set these variables instead:
+
+```powershell
+setx BADUSB_GPT_AUTHORIZED_INSTALL "YES"
+setx BADUSB_GPT_DISCORD_WEBHOOK "https://discord.com/api/webhooks/..."
+```
+
+That installer reports only installation status metadata to Discord. Do not commit webhook URLs or generated logs.
 
 Optional model override:
 

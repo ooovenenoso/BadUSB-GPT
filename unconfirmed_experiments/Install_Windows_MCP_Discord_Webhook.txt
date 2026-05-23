@@ -1,0 +1,160 @@
+REM BadUSB-GPT Windows-MCP installer with Discord status webhook
+REM Author: ooovenenoso
+REM Experimental payload. Use only on Windows systems where you have explicit permission.
+REM Requires BADUSB_GPT_AUTHORIZED_INSTALL=YES and BADUSB_GPT_DISCORD_WEBHOOK in the Windows user environment.
+REM Installs uv if missing, installs windows-mcp from PyPI, registers the per-user windows-mcp-server Scheduled Task, and posts install status only.
+DELAY 700
+GUI r
+DELAY 500
+STRING powershell -NoProfile -ExecutionPolicy Bypass
+ENTER
+DELAY 1200
+STRING $ErrorActionPreference = 'Stop'
+ENTER
+DELAY 80
+STRING $consent = $env:BADUSB_GPT_AUTHORIZED_INSTALL
+ENTER
+DELAY 80
+STRING if ($consent -ne 'YES') { throw 'Set BADUSB_GPT_AUTHORIZED_INSTALL=YES before running this authorized Windows-MCP installer payload.' }
+ENTER
+DELAY 80
+STRING $webhook = $env:BADUSB_GPT_DISCORD_WEBHOOK
+ENTER
+DELAY 80
+STRING if ([string]::IsNullOrWhiteSpace($webhook)) { throw 'Set BADUSB_GPT_DISCORD_WEBHOOK before running this payload.' }
+ENTER
+DELAY 80
+STRING if ($webhook -notmatch '^https://(discord(app)?\.com|canary\.discord\.com)/api/webhooks/') { throw 'BADUSB_GPT_DISCORD_WEBHOOK is not a Discord webhook URL.' }
+ENTER
+DELAY 80
+STRING $logDir = Join-Path $env:USERPROFILE '.badusb-gpt'
+ENTER
+DELAY 80
+STRING New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+ENTER
+DELAY 80
+STRING $logPath = Join-Path $logDir 'windows-mcp-install.log'
+ENTER
+DELAY 80
+STRING Start-Transcript -Path $logPath -Force | Out-Null
+ENTER
+DELAY 80
+STRING $status = 'started'
+ENTER
+DELAY 80
+STRING $details = [ordered]@{}
+ENTER
+DELAY 80
+STRING try {
+ENTER
+DELAY 80
+STRING   $details.User = $env:USERNAME
+ENTER
+DELAY 80
+STRING   $details.ComputerName = $env:COMPUTERNAME
+ENTER
+DELAY 80
+STRING   $details.StartedAt = (Get-Date).ToString('o')
+ENTER
+DELAY 80
+STRING   if (-not (Get-Command python -ErrorAction SilentlyContinue) -and -not (Get-Command py -ErrorAction SilentlyContinue)) {
+ENTER
+DELAY 80
+STRING     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { throw 'Python 3.13+ or winget is required to install uv.' }
+ENTER
+DELAY 80
+STRING     winget install --id Python.Python.3.13 -e --scope user --silent --accept-package-agreements --accept-source-agreements
+ENTER
+DELAY 80
+STRING     $env:Path = "$env:LOCALAPPDATA\Programs\Python\Python313;$env:LOCALAPPDATA\Programs\Python\Python313\Scripts;$env:Path"
+ENTER
+DELAY 80
+STRING   }
+ENTER
+DELAY 80
+STRING   if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+ENTER
+DELAY 80
+STRING     if (Get-Command py -ErrorAction SilentlyContinue) { py -3.13 -m pip install --user uv } else { python -m pip install --user uv }
+ENTER
+DELAY 80
+STRING     $env:Path = "$env:USERPROFILE\AppData\Roaming\Python\Python313\Scripts;$env:USERPROFILE\AppData\Roaming\Python\Python312\Scripts;$env:USERPROFILE\AppData\Roaming\Python\Python311\Scripts;$env:USERPROFILE\.local\bin;$env:Path"
+ENTER
+DELAY 80
+STRING   }
+ENTER
+DELAY 80
+STRING   if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { throw 'uv was not found after install attempt. Install Python 3.13+ and uv, then rerun.' }
+ENTER
+DELAY 80
+STRING   uv tool install windows-mcp
+ENTER
+DELAY 80
+STRING   $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
+ENTER
+DELAY 80
+STRING   if (-not (Get-Command windows-mcp -ErrorAction SilentlyContinue)) { throw 'windows-mcp executable was not found after uv tool install.' }
+ENTER
+DELAY 80
+STRING   windows-mcp install --transport sse --host 127.0.0.1 --port 8000
+ENTER
+DELAY 80
+STRING   $task = Get-ScheduledTask -TaskName 'windows-mcp-server' -ErrorAction SilentlyContinue
+ENTER
+DELAY 80
+STRING   $details.TaskState = if ($task) { $task.State.ToString() } else { 'missing' }
+ENTER
+DELAY 80
+STRING   $details.WindowsMcpPath = (Get-Command windows-mcp).Source
+ENTER
+DELAY 80
+STRING   $details.LogPath = $logPath
+ENTER
+DELAY 80
+STRING   $details.Transport = 'sse'
+ENTER
+DELAY 80
+STRING   $details.Endpoint = 'http://127.0.0.1:8000'
+ENTER
+DELAY 80
+STRING   $status = 'success'
+ENTER
+DELAY 80
+STRING } catch {
+ENTER
+DELAY 80
+STRING   $status = 'failed'
+ENTER
+DELAY 80
+STRING   $details.Error = $_.Exception.Message
+ENTER
+DELAY 80
+STRING } finally {
+ENTER
+DELAY 80
+STRING   $details.CompletedAt = (Get-Date).ToString('o')
+ENTER
+DELAY 80
+STRING   Stop-Transcript | Out-Null
+ENTER
+DELAY 80
+STRING   $color = if ($status -eq 'success') { 5763719 } else { 15548997 }
+ENTER
+DELAY 80
+STRING   $fields = @()
+ENTER
+DELAY 80
+STRING   foreach ($key in $details.Keys) { $fields += @{ name = $key; value = [string]$details[$key]; inline = $false } }
+ENTER
+DELAY 80
+STRING   $payload = @{ username = 'BadUSB-GPT Lab Installer'; embeds = @(@{ title = "Windows-MCP install $status"; description = 'Authorized lab installation status. No secrets are included.'; color = $color; fields = $fields }) } | ConvertTo-Json -Depth 6
+ENTER
+DELAY 80
+STRING   Invoke-RestMethod -Uri $webhook -Method POST -ContentType 'application/json' -Body $payload
+ENTER
+DELAY 80
+STRING   if ($status -ne 'success') { exit 1 }
+ENTER
+DELAY 80
+STRING }
+ENTER

@@ -13,16 +13,19 @@ This guide explains how contributors can validate scripts in `unconfirmed_experi
 
 1. Select a script from `unconfirmed_experiments/`.
 2. Read the full payload and confirm what it types/runs.
-3. Set `BADUSB_GPT_API_KEY` and `BADUSB_GPT_BASE_URL` in the Windows user environment; optionally set `BADUSB_GPT_MODEL`.
+3. For GPT report payloads, set `BADUSB_GPT_API_KEY` and `BADUSB_GPT_BASE_URL` in the Windows user environment; optionally set `BADUSB_GPT_MODEL`.
+   For the Windows-MCP installer, set `BADUSB_GPT_AUTHORIZED_INSTALL=YES` and `BADUSB_GPT_DISCORD_WEBHOOK` instead.
 4. Run the payload in a lab machine.
-5. Confirm that `Pentesting_Report.html` is created on the desktop.
-6. Review the report for safe defensive guidance only.
+5. Confirm the expected artifact:
+   - GPT report payloads create `Pentesting_Report.html` on the desktop.
+   - Windows-MCP installer creates the `windows-mcp-server` Scheduled Task and sends a status embed to Discord.
+6. Review any report or webhook output for safe defensive guidance only and verify no secrets were included.
 7. Document:
    - Windows version/build
    - hardware/encoder used
    - payload filename
-   - model used
-   - whether the report opened successfully
+   - model used, or Windows-MCP version/path for installer tests
+   - whether the report opened or the MCP Scheduled Task/webhook succeeded
    - any changes required
 8. Open a pull request or issue with your results.
 
