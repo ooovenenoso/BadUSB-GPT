@@ -7,14 +7,15 @@ Two top-level folders store experiments:
 - `unconfirmed_experiments/` – draft or proof-of-concept scripts. Anything here should be treated as experimental.
 - `confirmed_experiments/` – scripts that have been tested and approved for general use.
 
-When contributing new scripts:
+Owner-maintained workflow:
 
 1. Place untested or in-progress payloads inside `unconfirmed_experiments/`.
 2. After validating a script, move it to `confirmed_experiments/`.
 3. Keep filenames and documentation in English.
-4. Do not embed API keys, bearer tokens, host-specific secrets, or generated private report data.
-5. Keep payloads non-destructive and scoped to authorized defensive use.
-6. Run repository checks before committing:
+4. Keep the public payload structurally hardcoded, but commit only the safe placeholder `PASTE_OPENAI_API_KEY_HERE` instead of a real API key.
+5. Do not embed real API keys, bearer tokens, host-specific secrets, or generated private report data.
+6. Keep payloads non-destructive and scoped to authorized defensive use.
+7. Run repository checks before committing:
 
 ```bash
 python scripts/generate_payloads.py

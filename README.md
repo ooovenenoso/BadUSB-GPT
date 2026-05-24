@@ -6,14 +6,13 @@ BadUSB-GPT contains USB Rubber Ducky payload experiments that generate an AI-ass
 
 > **Ethical-use only:** run these payloads only on systems you own or where you have explicit written permission. The project is intended for lab work, security education, and authorized defensive assessments.
 
-## 2026 refresh
+## Current build
 
-- Uses current GPT-class model defaults instead of legacy `gpt-3.5-turbo`.
-- Reads API credentials and API base URL from environment variables; no keys or provider endpoints are embedded in payloads.
-- Supports `BADUSB_GPT_MODEL` / `OPENAI_MODEL` override without editing payload files.
-- Adds safer report generation: AI output and inventory are HTML-escaped before being written to disk.
-- Adds payload generation and validation scripts plus GitHub Actions checks.
-- Keeps untested variants in `unconfirmed_experiments/` until they are validated.
+- Restores the original plug-and-play style: API key, OpenAI base URL, and model are hardcoded directly in each payload.
+- Keeps the committed API key as the safe placeholder `PASTE_OPENAI_API_KEY_HERE`; replace it privately before authorized lab use.
+- Uses the hardcoded OpenAI-compatible base URL `https://api.openai.com/v1`.
+- Keeps safer report generation: AI output and inventory are HTML-escaped before being written to disk.
+- Maintained as an owner-controlled project by `ooovenenoso`.
 
 ## Payloads
 
@@ -27,22 +26,22 @@ BadUSB-GPT contains USB Rubber Ducky payload experiments that generate an AI-ass
 - Authorized Windows test machine or VM.
 - USB Rubber Ducky-compatible device/encoder.
 - PowerShell available on the test machine.
-- API key and OpenAI-compatible base URL stored in the Windows user environment:
+- A valid OpenAI API key inserted directly in the payload before use.
+
+Edit the payload line:
 
 ```powershell
-setx BADUSB_GPT_API_KEY "your_api_key_here"
-setx BADUSB_GPT_BASE_URL "https://your-openai-compatible-provider/v1"
+$apiKey = 'PASTE_OPENAI_API_KEY_HERE'
 ```
 
-The payload also accepts compatible `OPENAI_API_KEY` and `OPENAI_BASE_URL` variables if you already use those.
+Replace only the placeholder value locally/private. Do **not** commit a real API key.
 
-Optional model override:
+The base URL and model are also hardcoded in the payload:
 
 ```powershell
-setx BADUSB_GPT_MODEL "gpt-4.1-mini"
+$baseUrl = 'https://api.openai.com/v1'
+$model = 'gpt-4.1-mini'
 ```
-
-Restart the PowerShell/session after `setx` so the new variables are visible.
 
 ## What the payload collects
 
@@ -65,7 +64,7 @@ Regenerate all payload variants:
 python scripts/generate_payloads.py
 ```
 
-Validate payload syntax and safety checks:
+Validate payload syntax and placeholder safety:
 
 ```bash
 python scripts/validate_payloads.py
@@ -76,8 +75,7 @@ python scripts/validate_payloads.py
 1. Review a payload before running it.
 2. Test only in a VM or dedicated authorized lab machine.
 3. Record OS version, device/encoder used, model, and results.
-4. Submit notes via issue or pull request.
-5. Move scripts from `unconfirmed_experiments/` to `confirmed_experiments/` only after validation.
+4. Move scripts from `unconfirmed_experiments/` to `confirmed_experiments/` only after validation.
 
 ## Supporters and donations
 
